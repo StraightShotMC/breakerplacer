@@ -2,10 +2,10 @@ package com.khazoda.breakerplacer.util;
 
 import com.khazoda.breakerplacer.Constants;
 import net.minecraft.block.Block;
-import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.equipment.ArmorMaterial;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -62,11 +62,6 @@ public class RegistryHelper {
   // ******************************
   public static Item registerItem(String name, Item item) {
     return Registry.register(Registries.ITEM, newID(name), item);
-  }
-
-  // Register Armor Material
-  public static RegistryEntry<ArmorMaterial> registerArmorMaterial(String name, ArmorMaterial material) {
-    return Registry.registerReference(Registries.ARMOR_MATERIAL, newID(name), material);
   }
 
 }

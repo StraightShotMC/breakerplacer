@@ -4,17 +4,24 @@ import com.khazoda.breakerplacer.BreakerPlacer;
 import com.khazoda.breakerplacer.block.BreakerBlock;
 import com.khazoda.breakerplacer.block.PlacerBlock;
 import com.khazoda.breakerplacer.util.RegistryHelper;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.item.equipment.ArmorMaterial;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+
+import java.util.function.Function;
+
+import static com.khazoda.breakerplacer.util.RegistryHelper.newID;
 
 public class RegBlocks {
   public static final Item.Settings defaultItemSettings = new Item.Settings().maxCount(64);
 
-  public static final BreakerBlock BREAKER_BLOCK = register("breaker", new BreakerBlock(), defaultItemSettings);
-  public static final PlacerBlock PLACER_BLOCK = register("placer", new PlacerBlock(), defaultItemSettings);
+  public static final Block BREAKER_BLOCK = register("breaker", BreakerBlock::new, defaultItemSettings);
+  public static final Block PLACER_BLOCK = register("placer", PlacerBlock::new, defaultItemSettings);
 
   public static void init() {
     BreakerPlacer.loadedRegistries += 1;
@@ -22,7 +29,9 @@ public class RegBlocks {
 
 
   /* Register block and item with default item settings */
-  private static <B extends Block> B register(String name, B block, Item.Settings itemSettings) {
+  private static Block register(String name, Function<AbstractBlock.Settings, Block> factory, Item.Settings itemSettings) {
+    Block block = factory.apply(AbstractBlock.Settings.create().registryKey(RegistryKey.of(RegistryKeys.BLOCK, newID(name))));
+    itemSettings = itemSettings.registryKey(RegistryKey.of(RegistryKeys.ITEM, newID(name))).useBlockPrefixedTranslationKey();
     return RegistryHelper.registerBlock(name, block, itemSettings);
   }
 
@@ -42,7 +51,7 @@ public class RegBlocks {
   }
 
   /* Register armour material */
-  private static RegistryEntry<ArmorMaterial> register(String name, ArmorMaterial material) {
-    return RegistryHelper.registerArmorMaterial(name, material);
+  private static ArmorMaterial register(String name, ArmorMaterial material) {
+    return material;
   }
 }
