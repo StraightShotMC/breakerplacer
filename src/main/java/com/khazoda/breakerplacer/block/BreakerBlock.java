@@ -16,10 +16,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -40,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class BreakerBlock extends BaseBlock {
   public static final MapCodec<BreakerBlock> CODEC = createCodec(BreakerBlock::new);
@@ -135,12 +135,16 @@ public class BreakerBlock extends BaseBlock {
 
   public List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity, ItemStack tool) {
     CachedBlockPosition cachedPos = new CachedBlockPosition(world, pos, false);
-    RegistryKey<LootTable> registryKey = state.getBlock().getLootTableKey();
-    if (registryKey == LootTables.EMPTY) return Collections.emptyList();
+    Optional<RegistryKey<LootTable>> optionalKey = state.getBlock().getLootTableKey();
+    RegistryKey<LootTable> registryKey;
+    if (optionalKey.isPresent()) {
+      registryKey = optionalKey.get();
+    } else {
+      return Collections.emptyList();
+    }
+    LootWorldContext.Builder builder = new LootWorldContext.Builder(world).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos)).add(LootContextParameters.TOOL, tool).add(LootContextParameters.BLOCK_STATE, state).addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity);
 
-    LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world).add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos)).add(LootContextParameters.TOOL, tool).add(LootContextParameters.BLOCK_STATE, state).addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity);
-
-    LootContextParameterSet parameterSet = builder.build(LootContextTypes.BLOCK);
+    LootWorldContext parameterSet = builder.build(LootContextTypes.BLOCK);
     ServerWorld serverWorld = parameterSet.getWorld();
     LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(registryKey);
 

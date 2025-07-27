@@ -23,7 +23,7 @@ public class ModNetworking {
         float z = randomFloatBetween(r.nextFloat(), -0.48f, 0.48f);
 
         for (int j = 0; j < particleCount; j++) {
-          world.addParticle(particleType, center.x + x + offset.x, center.y + y + offset.y, center.z + z + offset.z,
+          world.addParticleClient(particleType, center.x + x + offset.x, center.y + y + offset.y, center.z + z + offset.z,
               randomVelocity(r.nextFloat(), velocityMagnitude),
               randomVelocity(r.nextFloat(), velocityMagnitude),
               randomVelocity(r.nextFloat(), velocityMagnitude));
@@ -47,7 +47,7 @@ public class ModNetworking {
   public static void playSoundOnClient(SoundEvent sound, World world, BlockPos pos, float volume, float pitch) {
     try {
       Vec3d vec = pos.toCenterPos();
-      world.playSoundAtBlockCenter(BlockPos.ofFloored(vec), sound, SoundCategory.BLOCKS, volume, pitch, true);
+      world.playSoundAtBlockCenterClient(BlockPos.ofFloored(vec), sound, SoundCategory.BLOCKS, volume, pitch, true);
     } catch (Exception e) {
       System.out.println("Caught sound exception");
     }

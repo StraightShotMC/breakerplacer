@@ -12,7 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -21,10 +21,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseBlock extends FacingBlock implements BlockEntityProvider {
-  public static final DirectionProperty FACING = Properties.FACING;
+  public static final EnumProperty<Direction> FACING = Properties.FACING;
   public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
   public static final Settings defaultSettings = Settings.create().sounds(BlockSoundGroup.STONE).strength(3.5f).pistonBehavior(PistonBehavior.BLOCK).instrument(NoteBlockInstrument.BASS).mapColor(MapColor.STONE_GRAY);
 
@@ -46,8 +47,7 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
 
   /* Drop contents on destroyed */
   @Override
-  public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-    if (state.getBlock() != newState.getBlock()) {
+  protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
       BlockEntity be = world.getBlockEntity(pos);
 
       if (be instanceof Inventory) {
@@ -55,12 +55,11 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
         world.updateComparators(pos, this);
       }
 
-      super.onStateReplaced(state, world, pos, newState, moved);
-    }
+      super.onStateReplaced(state, world, pos, moved);
   }
 
   @Override
-  protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+  protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
     boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
     boolean bl2 = state.get(TRIGGERED);
     if (bl && !bl2) {

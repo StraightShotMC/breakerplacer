@@ -2,10 +2,13 @@ package com.khazoda.breakerplacer.screen;
 
 import com.khazoda.breakerplacer.Constants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.CyclingSlotIcon;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -47,12 +50,10 @@ public class BreakerScreen extends HandledScreen<BreakerScreenHandler> {
 
   @Override
   protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-    RenderSystem.setShader(GameRenderer::getPositionTexProgram);
     RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    RenderSystem.setShaderTexture(0, TEXTURE);
     int x = (width - backgroundWidth) / 2;
     int y = (height - backgroundHeight) / 2;
-    context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
+    context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 256, 256);
     this.templateSlotIcon.render(this.handler, context, delta, x, y);
   }
 

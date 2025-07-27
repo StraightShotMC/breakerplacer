@@ -4,6 +4,7 @@ import com.khazoda.breakerplacer.BreakerPlacer;
 import com.khazoda.breakerplacer.Constants;
 import com.khazoda.breakerplacer.block.entity.BreakerBlockEntity;
 import com.khazoda.breakerplacer.block.entity.PlacerBlockEntity;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -14,11 +15,11 @@ public class RegBlockEntities {
 
   public static final BlockEntityType<PlacerBlockEntity> PLACER_BLOCK_ENTITY = Registry.register(
       Registries.BLOCK_ENTITY_TYPE, Identifier.of(Constants.NAMESPACE, "placer_block_entity"),
-      BlockEntityType.Builder.create(PlacerBlockEntity::new,
+      FabricBlockEntityTypeBuilder.create(PlacerBlockEntity::new,
           RegBlocks.PLACER_BLOCK).build());
   public static final BlockEntityType<BreakerBlockEntity> BREAKER_BLOCK_ENTITY = Registry.register(
       Registries.BLOCK_ENTITY_TYPE, Identifier.of(Constants.NAMESPACE, "breaker_block_entity"),
-      BlockEntityType.Builder.create(BreakerBlockEntity::new,
+      FabricBlockEntityTypeBuilder.create(BreakerBlockEntity::new,
           RegBlocks.BREAKER_BLOCK).build());
 
 
