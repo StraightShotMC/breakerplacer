@@ -1,0 +1,5 @@
+// 1.21.5	-999999999-01-01T00:00:00	Block Breaker & Block Placer/
+aad3ebaad429d6f3f2b641630a23137cb82a0dd7 data/breakerplacer/advancement/recipes/redstone/breaker.json
+2d8243d8aa1f27582c6a0b2dc3cdb335ec0bd3a4 data/breakerplacer/advancement/recipes/redstone/placer.json
+ec358770df8bf01a0990196c49f5b83727ce3571 data/breakerplacer/recipe/breaker.json
+0f12e7400e95a2019c3557fa292bbb1aa222e670 data/breakerplacer/recipe/placer.json
