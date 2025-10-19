@@ -47,7 +47,7 @@ public class PlacerBlock extends BaseBlock {
 
   @Override
   public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-    if (!world.isClient) {
+    if (!world.isClient()) {
       NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
       if (screenHandlerFactory != null) {
         player.openHandledScreen(screenHandlerFactory);

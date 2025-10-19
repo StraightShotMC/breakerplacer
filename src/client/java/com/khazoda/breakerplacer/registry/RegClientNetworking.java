@@ -31,7 +31,7 @@ public class RegClientNetworking {
       context.client().execute(() -> {
         if (context.client().world == null)
           return;
-        context.client().particleManager.addBlockBreakParticles(payload.pos(), payload.state());
+        context.client().world.addBlockBreakParticles(payload.pos(), payload.state());
       });
     });
     /* Sound Event Networking Packet Client Receipt */

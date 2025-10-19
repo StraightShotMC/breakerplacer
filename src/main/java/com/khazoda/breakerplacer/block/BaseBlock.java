@@ -89,7 +89,7 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
   }
 
   @Override
-  protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+  protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
     return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
   }
 
