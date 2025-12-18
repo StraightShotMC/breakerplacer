@@ -1,6 +1,5 @@
 package com.khazoda.breakerplacer.registry;
 
-import com.khazoda.breakerplacer.BreakerPlacer;
 import com.khazoda.breakerplacer.Constants;
 import com.khazoda.breakerplacer.screen.BreakerScreenHandler;
 import com.khazoda.breakerplacer.screen.PlacerScreenHandler;
@@ -19,7 +18,5 @@ public class RegScreenHandlers {
   public static void init() {
     Registry.register(Registries.SCREEN_HANDLER, Identifier.of(Constants.NAMESPACE, "placer_screen_handler"), PLACER_SCREEN_HANDLER);
     Registry.register(Registries.SCREEN_HANDLER, Identifier.of(Constants.NAMESPACE, "breaker_screen_handler"), BREAKER_SCREEN_HANDLER);
-
-    BreakerPlacer.loadedRegistries += 1;
   }
 }

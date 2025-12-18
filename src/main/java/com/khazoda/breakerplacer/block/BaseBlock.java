@@ -48,14 +48,14 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
   /* Drop contents on destroyed */
   @Override
   protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-      BlockEntity be = world.getBlockEntity(pos);
+    BlockEntity be = world.getBlockEntity(pos);
 
-      if (be instanceof Inventory) {
-        ItemScatterer.spawn(world, pos, (Inventory) be);
-        world.updateComparators(pos, this);
-      }
+    if (be instanceof Inventory) {
+      ItemScatterer.spawn(world, pos, (Inventory) be);
+      world.updateComparators(pos, this);
+    }
 
-      super.onStateReplaced(state, world, pos, moved);
+    super.onStateReplaced(state, world, pos, moved);
   }
 
   @Override

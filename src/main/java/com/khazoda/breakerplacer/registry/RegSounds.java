@@ -1,6 +1,5 @@
 package com.khazoda.breakerplacer.registry;
 
-import com.khazoda.breakerplacer.BreakerPlacer;
 import com.khazoda.breakerplacer.Constants;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -12,7 +11,6 @@ public class RegSounds {
   public static final SoundEvent FAIL = register("fail");
 
   public static void init() {
-    BreakerPlacer.loadedRegistries += 1;
   }
 
   private static SoundEvent register(String name) {

@@ -172,7 +172,7 @@ public class BreakerBlock extends BaseBlock {
     WorldView world = cachedPos.getWorld();
 
     float blockHardness = blockState.getHardness(world, blockPos);
-    
+
     if (blockHardness < 0.0F) {
       return false;
     }

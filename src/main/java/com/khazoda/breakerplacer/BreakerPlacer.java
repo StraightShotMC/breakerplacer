@@ -7,7 +7,6 @@ import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 
 public class BreakerPlacer implements ModInitializer {
-  public static int loadedRegistries = 0;
 
   @Override
   public void onInitialize() {
@@ -19,7 +18,6 @@ public class BreakerPlacer implements ModInitializer {
 
     ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> content.addAfter(Items.CRAFTER, RegBlocks.PLACER_BLOCK));
     ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> content.addAfter(Items.CRAFTER, RegBlocks.BREAKER_BLOCK));
-
-    Constants.LOG.info("[BB&BP] {}/5 common registries initialized!", loadedRegistries);
+    Constants.LOG.info("- Block Breaker & Block Placer Loaded -");
   }
 }

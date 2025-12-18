@@ -1,6 +1,5 @@
 package com.khazoda.breakerplacer.registry;
 
-import com.khazoda.breakerplacer.BreakerPlacerClient;
 import com.khazoda.breakerplacer.networking.BlockBreakParticlePayload;
 import com.khazoda.breakerplacer.networking.ModNetworking;
 import com.khazoda.breakerplacer.networking.ParticlePayload;
@@ -43,7 +42,5 @@ public class RegClientNetworking {
         ModNetworking.playSoundOnClient(payload.soundEvent(), context.client().world, payload.pos(), 1f, payload.pitch());
       });
     });
-
-    BreakerPlacerClient.loadedRegistries += 1;
   }
 }

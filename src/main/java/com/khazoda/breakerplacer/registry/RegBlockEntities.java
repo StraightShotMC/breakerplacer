@@ -1,6 +1,5 @@
 package com.khazoda.breakerplacer.registry;
 
-import com.khazoda.breakerplacer.BreakerPlacer;
 import com.khazoda.breakerplacer.Constants;
 import com.khazoda.breakerplacer.block.entity.BreakerBlockEntity;
 import com.khazoda.breakerplacer.block.entity.PlacerBlockEntity;
@@ -24,6 +23,5 @@ public class RegBlockEntities {
 
 
   public static void init() {
-    BreakerPlacer.loadedRegistries += 1;
   }
 }
