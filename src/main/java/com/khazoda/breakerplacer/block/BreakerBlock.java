@@ -31,6 +31,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -124,9 +125,9 @@ public class BreakerBlock extends BaseBlock {
 
         List<ItemStack> l = getDroppedStacks(targetBlockState, world, targetPos, targetBE, toolToBreakWith);
         l.forEach(stack -> {
-          // Drop items on floor if breaker is full
-          if (!be.addToFirstFreeSlot(stack)) {
-            dropStacks(targetBlockState, world, targetPos, targetBE);
+          be.addToFirstFreeSlot(stack);
+          if (!stack.isEmpty()) {
+            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
           }
         });
       } catch (Exception e) {

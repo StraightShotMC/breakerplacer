@@ -25,8 +25,7 @@ public class BreakerBlockEntity extends BaseBlockEntity implements SidedInventor
   }
 
   /* Returns true if item is successfully added, false if not */
-  public boolean addToFirstFreeSlot(ItemStack stack) {
-    boolean allItemsAdded = false;
+  public void addToFirstFreeSlot(ItemStack stack) {
     int i = this.getMaxCount(stack);
 
     /* .size() - 1 to prevent tool slot from receiving items */
@@ -41,14 +40,12 @@ public class BreakerBlockEntity extends BaseBlockEntity implements SidedInventor
             stack.decrement(k);
             itemStack.increment(k);
           }
-          allItemsAdded = true;
         }
         if (stack.isEmpty()) {
           break;
         }
       }
     }
-    return allItemsAdded;
   }
 
   /* Prevents items being taken from tool slot */

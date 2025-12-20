@@ -16,7 +16,7 @@ public class RegClientNetworking {
     /* Particle Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(ParticlePayload.ID, (payload, context) -> {
       if (context.client() == null) return;
-      assert context.client().player != null;
+      if (context.client().player == null) return;
       context.client().execute(() -> {
         if (context.client().world == null)
           return;
@@ -26,7 +26,7 @@ public class RegClientNetworking {
     /* Block Breaking Particle Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(BlockBreakParticlePayload.ID, (payload, context) -> {
       if (context.client() == null) return;
-      assert context.client().player != null;
+      if (context.client().player == null) return;
       context.client().execute(() -> {
         if (context.client().world == null)
           return;
