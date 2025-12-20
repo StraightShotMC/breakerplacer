@@ -110,7 +110,6 @@ public class BreakerBlock extends BaseBlock {
 
         // Do post-block break update stuff
         world.updateNeighbors(targetPos, targetBlock);
-        state.updateNeighbors(world, targetPos, Block.NOTIFY_LISTENERS);
         world.emitGameEvent(GameEvent.BLOCK_DESTROY, targetPos, GameEvent.Emitter.of(targetBlockState));
 
         // Show block breaking particles to clients nearby

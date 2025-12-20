@@ -48,6 +48,8 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
   /* Drop contents on destroyed */
   @Override
   protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+    if (state.isOf(world.getBlockState(pos).getBlock())) return;
+
     BlockEntity be = world.getBlockEntity(pos);
 
     if (be instanceof Inventory) {
@@ -64,9 +66,19 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
     boolean bl2 = state.get(TRIGGERED);
     if (bl && !bl2) {
       world.scheduleBlockTick(pos, this, 4);
-      world.setBlockState(pos, state.with(TRIGGERED, Boolean.TRUE), Block.NOTIFY_LISTENERS);
+      world.setBlockState(pos, state.with(TRIGGERED, true), Block.NOTIFY_ALL);
     } else if (!bl && bl2) {
-      world.setBlockState(pos, state.with(TRIGGERED, Boolean.FALSE), Block.NOTIFY_LISTENERS);
+      world.setBlockState(pos, state.with(TRIGGERED, false), Block.NOTIFY_ALL);
+    }
+  }
+
+  @Override
+  protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+    if (!oldState.isOf(state.getBlock())) {
+      if (world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up())) {
+        world.scheduleBlockTick(pos, this, 4);
+        world.setBlockState(pos, state.with(TRIGGERED, Boolean.TRUE), Block.NOTIFY_ALL);
+      }
     }
   }
 
