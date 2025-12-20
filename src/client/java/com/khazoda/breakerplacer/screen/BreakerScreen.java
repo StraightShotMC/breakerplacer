@@ -24,7 +24,7 @@ public class BreakerScreen extends HandledScreen<BreakerScreenHandler> {
       EMPTY_SLOT_PICKAXE_TEXTURE, EMPTY_SLOT_SHOVEL_TEXTURE, EMPTY_SLOT_AXE_TEXTURE, EMPTY_SLOT_SHEARS_TEXTURE
   );
 
-  private final CyclingSlotIcon templateSlotIcon = new CyclingSlotIcon(54);
+  private final CyclingSlotIcon templateSlotIcon = new CyclingSlotIcon(9);
 
   public BreakerScreen(BreakerScreenHandler handler, PlayerInventory inventory, Text title) {
     super(handler, inventory, title);
@@ -61,9 +61,9 @@ public class BreakerScreen extends HandledScreen<BreakerScreenHandler> {
   private void renderSlotTooltip(DrawContext context, int mouseX, int mouseY) {
     Optional<Text> optional = Optional.empty();
     if (this.focusedSlot != null) {
-      ItemStack itemStack = this.handler.getSlot(54).getStack();
+      ItemStack itemStack = this.handler.getSlot(9).getStack();
       if (itemStack.isEmpty()) {
-        if (this.focusedSlot.id == 54) {
+        if (this.focusedSlot.id == 9) {
           optional = Optional.of(TOOL_SLOT_TOOLTIP);
         }
       }
