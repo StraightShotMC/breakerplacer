@@ -127,7 +127,7 @@ public class BreakerBlock extends BaseBlock {
         l.forEach(stack -> {
           be.addToFirstFreeSlot(stack);
           if (!stack.isEmpty()) {
-            ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack);
+            ItemScatterer.spawn(world, targetPos.getX(), targetPos.getY(), targetPos.getZ(), stack);
           }
         });
       } catch (Exception e) {
