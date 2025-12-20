@@ -1,5 +1,6 @@
 package com.khazoda.breakerplacer.block;
 
+import com.khazoda.breakerplacer.BreakerPlacerConfig;
 import com.khazoda.breakerplacer.Constants;
 import com.khazoda.breakerplacer.block.entity.BreakerBlockEntity;
 import com.khazoda.breakerplacer.networking.BlockBreakParticlePayload;
@@ -106,6 +107,13 @@ public class BreakerBlock extends BaseBlock {
           world.playSound(null, pos, RegSounds.FAIL, SoundCategory.BLOCKS, 1f, 1f);
           return;
         }
+
+        if (BreakerPlacerConfig.getInstance().toolTakesDamage() && toolToBreakWith.isDamageable()) {
+          toolToBreakWith.damage(1, world, null, (item) -> {
+            toolToBreakWith.setCount(0);
+          });
+        }
+
         // Remove broken block from the world expeditiously
         world.setBlockState(targetPos, targetBlockState.getFluidState().isOf(Fluids.WATER) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 

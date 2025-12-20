@@ -1,9 +1,8 @@
 package com.khazoda.breakerplacer.registry;
 
-import com.khazoda.breakerplacer.networking.BlockBreakParticlePayload;
-import com.khazoda.breakerplacer.networking.ModNetworking;
-import com.khazoda.breakerplacer.networking.ParticlePayload;
-import com.khazoda.breakerplacer.networking.SoundPayload;
+import com.khazoda.breakerplacer.BreakerPlacerConfig;
+import com.khazoda.breakerplacer.Constants;
+import com.khazoda.breakerplacer.networking.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
@@ -40,6 +39,14 @@ public class RegClientNetworking {
         if (context.client().world == null)
           return;
         ModNetworking.playSoundOnClient(payload.soundEvent(), context.client().world, payload.pos(), 1f, payload.pitch());
+      });
+    });
+
+    /* Config Networking Packet Client Receipt */
+    ClientPlayNetworking.registerGlobalReceiver(ConfigSyncPayload.ID, (payload, context) -> {
+      context.client().execute(() -> {
+        BreakerPlacerConfig.getInstance().setToolTakesDamage(payload.toolTakesDamage());
+        Constants.LOG.info("Synced config from server: Tools take damage = {}", payload.toolTakesDamage());
       });
     });
   }
