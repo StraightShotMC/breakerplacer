@@ -2,11 +2,13 @@
   "break": {
     "sounds": [
       "breakerplacer:break"
-    ]
+    ],
+    "subtitle": "subtitles.breakerplacer.break"
   },
   "fail": {
     "sounds": [
       "breakerplacer:fail"
-    ]
+    ],
+    "subtitle": "subtitles.breakerplacer.fail"
   }
 }
