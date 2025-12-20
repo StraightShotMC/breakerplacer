@@ -19,9 +19,11 @@ public class BreakerScreen extends HandledScreen<BreakerScreenHandler> {
   private static final Identifier EMPTY_SLOT_PICKAXE_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_pickaxe");
   private static final Identifier EMPTY_SLOT_SHOVEL_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_shovel");
   private static final Identifier EMPTY_SLOT_AXE_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_axe");
+  private static final Identifier EMPTY_SLOT_HOE_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_hoe");
+  private static final Identifier EMPTY_SLOT_SWORD_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_sword");
   private static final Identifier EMPTY_SLOT_SHEARS_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_shears");
   private static final List<Identifier> EMPTY_SLOT_TEXTURES = List.of(
-      EMPTY_SLOT_PICKAXE_TEXTURE, EMPTY_SLOT_SHOVEL_TEXTURE, EMPTY_SLOT_AXE_TEXTURE, EMPTY_SLOT_SHEARS_TEXTURE
+      EMPTY_SLOT_PICKAXE_TEXTURE, EMPTY_SLOT_SHOVEL_TEXTURE, EMPTY_SLOT_AXE_TEXTURE, EMPTY_SLOT_HOE_TEXTURE, EMPTY_SLOT_SWORD_TEXTURE, EMPTY_SLOT_SHEARS_TEXTURE
   );
 
   private final CyclingSlotIcon templateSlotIcon = new CyclingSlotIcon(9);
