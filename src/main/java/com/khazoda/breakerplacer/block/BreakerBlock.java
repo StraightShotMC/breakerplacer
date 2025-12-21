@@ -108,6 +108,8 @@ public class BreakerBlock extends BaseBlock {
           return;
         }
 
+        List<ItemStack> drops = getDroppedStacks(targetBlockState, world, targetPos, targetBE, toolToBreakWith);
+
         if (BreakerPlacerConfig.getInstance().toolTakesDamage() && toolToBreakWith.isDamageable()) {
           toolToBreakWith.damage(1, world, null, (item) -> {
             toolToBreakWith.setCount(0);
@@ -131,8 +133,7 @@ public class BreakerBlock extends BaseBlock {
         world.playSound(null, targetPos, RegSounds.BREAK, SoundCategory.BLOCKS, 0.35f, 1f);
         world.playSound(null, targetPos, targetBlockState.getSoundGroup().getBreakSound(), SoundCategory.BLOCKS, 0.75f, 1f);
 
-        List<ItemStack> l = getDroppedStacks(targetBlockState, world, targetPos, targetBE, toolToBreakWith);
-        l.forEach(stack -> {
+        drops.forEach(stack -> {
           be.addToFirstFreeSlot(stack);
           if (!stack.isEmpty()) {
             ItemScatterer.spawn(world, targetPos.getX(), targetPos.getY(), targetPos.getZ(), stack);
