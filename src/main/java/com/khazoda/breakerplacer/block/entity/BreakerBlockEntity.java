@@ -3,6 +3,7 @@ package com.khazoda.breakerplacer.block.entity;
 import com.khazoda.breakerplacer.registry.RegBlockEntities;
 import com.khazoda.breakerplacer.screen.BreakerScreenHandler;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
@@ -12,8 +13,8 @@ import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
 public class BreakerBlockEntity extends BaseBlockEntity implements SidedInventory {
-  private static final int[] INVENTORY_SLOTS = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
-  private static final int[] TOOL_SLOT = new int[]{9};
+  // Try tool slot (9) first, then 0-8
+  private static final int[] AVAILABLE_SLOTS = new int[]{9, 0, 1, 2, 3, 4, 5, 6, 7, 8};
 
   public BreakerBlockEntity(BlockPos blockPos, BlockState blockState) {
     super(RegBlockEntities.BREAKER_BLOCK_ENTITY, blockPos, blockState);
@@ -48,10 +49,10 @@ public class BreakerBlockEntity extends BaseBlockEntity implements SidedInventor
     }
   }
 
-  /* Prevents items being taken from tool slot */
+  /* Exposes all slots to automation, starting with the tool slot */
   @Override
   public int[] getAvailableSlots(Direction side) {
-    return INVENTORY_SLOTS;
+    return AVAILABLE_SLOTS;
   }
 
   @Override
@@ -60,15 +61,21 @@ public class BreakerBlockEntity extends BaseBlockEntity implements SidedInventor
   }
 
   @Override
+  public boolean isValid(int slot, ItemStack stack) {
+    if (slot == 9) {
+      return stack.contains(DataComponentTypes.TOOL);
+    }
+    return super.isValid(slot, stack);
+  }
+
+  /* Stop tool slot from being extracted from by hoppers etc.*/
+  @Override
   public boolean canExtract(int slot, ItemStack stack, Direction dir) {
     return slot != 9;
   }
-
 
   @Override
   public int size() {
     return 10;
   }
-
-
 }
