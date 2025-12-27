@@ -24,36 +24,63 @@ import net.minecraft.world.World;
 import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseBlock extends FacingBlock implements BlockEntityProvider {
+public abstract class BaseBlock extends BlockWithEntity {
   public static final EnumProperty<Direction> FACING = Properties.FACING;
   public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-  public static final Settings defaultSettings = Settings.create().sounds(BlockSoundGroup.STONE).strength(3.5f).pistonBehavior(PistonBehavior.BLOCK).instrument(NoteBlockInstrument.BASS).mapColor(MapColor.STONE_GRAY);
+
+  public static final Settings defaultSettings =
+      Settings.create()
+          .sounds(BlockSoundGroup.STONE)
+          .strength(3.5f)
+          .pistonBehavior(PistonBehavior.NORMAL)
+          .instrument(NoteBlockInstrument.BASS)
+          .mapColor(MapColor.STONE_GRAY);
 
   protected BaseBlock(Settings settings) {
     super(settings);
-    this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, Boolean.FALSE));
+    setDefaultState(
+        getStateManager()
+            .getDefaultState()
+            .with(FACING, Direction.NORTH)
+            .with(TRIGGERED, false)
+    );
   }
 
   protected BaseBlock() {
     this(defaultSettings);
   }
 
-  protected abstract void activate(ServerWorld world, BlockState state, BlockPos pos);
-
-  protected NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-    BlockEntity blockEntity = world.getBlockEntity(pos);
-    return blockEntity instanceof NamedScreenHandlerFactory ? (NamedScreenHandlerFactory) blockEntity : null;
+  // Important: BlockWithEntity blocks should return MODEL unless you have special rendering
+  @Override
+  public BlockRenderType getRenderType(BlockState state) {
+    return BlockRenderType.MODEL;
   }
 
-  /* Drop contents on destroyed */
+  protected abstract void activate(ServerWorld world, BlockState state, BlockPos pos);
+
+  @Nullable
   @Override
-  protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+  public NamedScreenHandlerFactory createScreenHandlerFactory(
+      BlockState state,
+      World world,
+      BlockPos pos
+  ) {
+    BlockEntity blockEntity = world.getBlockEntity(pos);
+    return blockEntity instanceof NamedScreenHandlerFactory factory ? factory : null;
+  }
+
+  @Override
+  protected void onStateReplaced(
+      BlockState state,
+      ServerWorld world,
+      BlockPos pos,
+      boolean moved
+  ) {
     if (state.isOf(world.getBlockState(pos).getBlock())) return;
 
     BlockEntity be = world.getBlockEntity(pos);
-
-    if (be instanceof Inventory) {
-      ItemScatterer.spawn(world, pos, (Inventory) be);
+    if (be instanceof Inventory inventory) {
+      ItemScatterer.spawn(world, pos, inventory);
       world.updateComparators(pos, this);
     }
 
@@ -61,28 +88,48 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
   }
 
   @Override
-  protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
-    boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
-    boolean bl2 = state.get(TRIGGERED);
-    if (bl && !bl2) {
+  protected void neighborUpdate(
+      BlockState state,
+      World world,
+      BlockPos pos,
+      Block sourceBlock,
+      @Nullable WireOrientation wireOrientation,
+      boolean notify
+  ) {
+    boolean powered =
+        world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+    boolean triggered = state.get(TRIGGERED);
+
+    if (powered && !triggered) {
       world.scheduleBlockTick(pos, this, 4);
       world.setBlockState(pos, state.with(TRIGGERED, true), Block.NOTIFY_ALL);
-    } else if (!bl && bl2) {
+    } else if (!powered && triggered) {
       world.setBlockState(pos, state.with(TRIGGERED, false), Block.NOTIFY_ALL);
     }
   }
 
   @Override
-  protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+  protected void onBlockAdded(
+      BlockState state,
+      World world,
+      BlockPos pos,
+      BlockState oldState,
+      boolean notify
+  ) {
     if (!oldState.isOf(state.getBlock())) {
       if (world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up())) {
         world.scheduleBlockTick(pos, this, 4);
-        world.setBlockState(pos, state.with(TRIGGERED, Boolean.TRUE), Block.NOTIFY_ALL);
+        world.setBlockState(pos, state.with(TRIGGERED, true), Block.NOTIFY_ALL);
       }
     }
   }
 
-  protected abstract void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random);
+  protected abstract void scheduledTick(
+      BlockState state,
+      ServerWorld world,
+      BlockPos pos,
+      Random random
+  );
 
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
@@ -92,7 +139,9 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
   @Nullable
   @Override
   public BlockState getPlacementState(ItemPlacementContext ctx) {
-    return this.getDefaultState().with(Properties.FACING, ctx.getPlayerLookDirection().getOpposite());
+    return getDefaultState()
+        .with(FACING, ctx.getPlayerLookDirection().getOpposite())
+        .with(TRIGGERED, false);
   }
 
   @Override
@@ -101,7 +150,12 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
   }
 
   @Override
-  protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
+  protected int getComparatorOutput(
+      BlockState state,
+      World world,
+      BlockPos pos,
+      Direction direction
+  ) {
     return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
   }
 
@@ -114,5 +168,4 @@ public abstract class BaseBlock extends FacingBlock implements BlockEntityProvid
   protected BlockState mirror(BlockState state, BlockMirror mirror) {
     return state.rotate(mirror.getRotation(state.get(FACING)));
   }
-
 }
