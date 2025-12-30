@@ -51,7 +51,7 @@ public class BreakerBlock extends BaseBlock {
   public static final MapCodec<BreakerBlock> CODEC = createCodec(BreakerBlock::new);
 
   public BreakerBlock(Settings settings) {
-    super(settings.sounds(BlockSoundGroup.STONE).strength(3.5f).pistonBehavior(PistonBehavior.BLOCK).instrument(NoteBlockInstrument.BASS).mapColor(MapColor.STONE_GRAY));
+    super(settings.sounds(BlockSoundGroup.STONE).strength(3.5f).pistonBehavior(PistonBehavior.NORMAL).instrument(NoteBlockInstrument.BASS).mapColor(MapColor.STONE_GRAY));
     this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, Boolean.FALSE));
   }
 
