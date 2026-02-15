@@ -90,7 +90,7 @@ public class PlacerBlock extends BaseBlock {
         AutomaticItemPlacementContext context = new AutomaticItemPlacementContext(world, pos, direction, itemStack, direction) {
           @Override
           public Direction getPlayerLookDirection() {
-            return this.getSide().getOpposite(); // Simulate looking towards the block
+            return this.getSide().getOpposite();
           }
           @Override
           public Direction getVerticalPlayerLookDirection() {
