@@ -38,18 +38,12 @@ public class BreakerScreen extends AbstractContainerScreen<BreakerScreenHandler>
   }
 
   @Override
-  public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-    super.extractBackground(graphics, mouseX, mouseY, a);
-    int x = (width - imageWidth) / 2;
-    int y = (height - imageHeight) / 2;
-    this.templateSlotIcon.extractRenderState(this.menu, graphics, a, x, y);
-  }
-
-  @Override
-  protected void extractMenuBackground(GuiGraphicsExtractor graphics) {
-    int x = (width - imageWidth) / 2;
-    int y = (height - imageHeight) / 2;
-    graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 256, 256);
+  public void extractBackground(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
+      super.extractBackground(graphics, mouseX, mouseY, a);
+      int xo = (this.width - this.imageWidth) / 2;
+      int yo = (this.height - this.imageHeight) / 2;
+      graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, xo, yo, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
+      this.templateSlotIcon.extractRenderState(this.menu, graphics, a, xo, yo);
   }
 
   @Override
