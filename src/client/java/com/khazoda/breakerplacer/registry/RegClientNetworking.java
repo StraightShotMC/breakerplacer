@@ -8,13 +8,12 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 public class RegClientNetworking {
   public static void init() {
-    PayloadTypeRegistry.playC2S().register(ParticlePayload.ID, ParticlePayload.CODEC);
-    PayloadTypeRegistry.playC2S().register(BlockBreakParticlePayload.ID, BlockBreakParticlePayload.CODEC);
-    PayloadTypeRegistry.playC2S().register(SoundPayload.ID, SoundPayload.CODEC);
+    PayloadTypeRegistry.serverboundPlay().register(ParticlePayload.ID, ParticlePayload.CODEC);
+    PayloadTypeRegistry.serverboundPlay().register(BlockBreakParticlePayload.ID, BlockBreakParticlePayload.CODEC);
+    PayloadTypeRegistry.serverboundPlay().register(SoundPayload.ID, SoundPayload.CODEC);
 
     /* Particle Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(ParticlePayload.ID, (payload, context) -> {
-      if (context.client() == null) return;
       if (context.client().player == null) return;
       context.client().execute(() -> {
         if (context.client().level == null)
@@ -24,7 +23,6 @@ public class RegClientNetworking {
     });
     /* Block Breaking Particle Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(BlockBreakParticlePayload.ID, (payload, context) -> {
-      if (context.client() == null) return;
       if (context.client().player == null) return;
       context.client().execute(() -> {
         if (context.client().level == null)
@@ -34,7 +32,6 @@ public class RegClientNetworking {
     });
     /* Sound Event Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(SoundPayload.ID, (payload, context) -> {
-      if (context.client() == null) return;
       context.client().execute(() -> {
         if (context.client().level == null)
           return;

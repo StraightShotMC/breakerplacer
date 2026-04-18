@@ -63,7 +63,8 @@ public class BreakerScreenHandler extends AbstractContainerMenu {
     ItemStack newStack = ItemStack.EMPTY;
     Slot slot = this.slots.get(slotIndex);
 
-    if (slot != null && slot.hasItem()) {
+      //noinspection ConstantValue (it's a lie)
+      if (slot != null && slot.hasItem()) {
       ItemStack originalStack = slot.getItem();
       newStack = originalStack.copy();
 
