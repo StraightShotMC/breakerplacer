@@ -1,6 +1,6 @@
 package com.khazoda.breakerplacer.screen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -16,10 +16,8 @@ public class PlacerScreen extends AbstractContainerScreen<PlacerScreenHandler> {
   }
 
   @Override
-  public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-    renderBackground(context, mouseX, mouseY, delta);
-    super.render(context, mouseX, mouseY, delta);
-    renderTooltip(context, mouseX, mouseY);
+  public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    super.extractRenderState(graphics, mouseX, mouseY, a);
   }
 
   @Override
@@ -29,9 +27,9 @@ public class PlacerScreen extends AbstractContainerScreen<PlacerScreenHandler> {
   }
 
   @Override
-  protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
+  protected void extractMenuBackground(GuiGraphicsExtractor graphics) {
     int x = (width - imageWidth) / 2;
     int y = (height - imageHeight) / 2;
-    context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 256, 256);
+    graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 256, 256);
   }
 }

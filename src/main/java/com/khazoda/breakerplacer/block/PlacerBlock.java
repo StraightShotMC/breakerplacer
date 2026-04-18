@@ -62,7 +62,7 @@ public class PlacerBlock extends BaseBlock {
     if (be == null) {
       Constants.LOG.warn("No matching block entity at {}, skipping block placement", pos);
     } else {
-      int i = be.chooseNonEmptySlot(world.random);
+      int i = be.chooseNonEmptySlot(world.getRandom());
       world.gameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Context.of(be.getBlockState()));
       if (i < 0) {
         world.playSound(

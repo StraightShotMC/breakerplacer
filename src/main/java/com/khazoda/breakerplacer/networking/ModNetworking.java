@@ -15,7 +15,7 @@ public class ModNetworking {
   public static void spawnParticlesOnClient(ParticleOptions particleType, Level world, BlockPos pos, Vec3 offset, int particleCount, float velocityMagnitude, byte iterations) {
     try {
       Vec3 center = pos.getCenter();
-      RandomSource r = world.random;
+      RandomSource r = world.getRandom();
 
       for (int i = 0; i < iterations; i++) {
         float x = randomFloatBetween(r.nextFloat(), -0.48f, 0.48f);

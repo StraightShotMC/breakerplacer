@@ -9,10 +9,10 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 public class RegNetworking {
 
   public static void init() {
-    PayloadTypeRegistry.playS2C().register(ParticlePayload.ID, ParticlePayload.CODEC);
-    PayloadTypeRegistry.playS2C().register(BlockBreakParticlePayload.ID, BlockBreakParticlePayload.CODEC);
-    PayloadTypeRegistry.playS2C().register(SoundPayload.ID, SoundPayload.CODEC);
+    PayloadTypeRegistry.clientboundPlay().register(ParticlePayload.ID, ParticlePayload.CODEC);
+    PayloadTypeRegistry.clientboundPlay().register(BlockBreakParticlePayload.ID, BlockBreakParticlePayload.CODEC);
+    PayloadTypeRegistry.clientboundPlay().register(SoundPayload.ID, SoundPayload.CODEC);
 
-    PayloadTypeRegistry.playS2C().register(ConfigSyncPayload.ID, ConfigSyncPayload.CODEC);
+    PayloadTypeRegistry.clientboundPlay().register(ConfigSyncPayload.ID, ConfigSyncPayload.CODEC);
   }
 }

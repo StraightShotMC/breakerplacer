@@ -1,6 +1,6 @@
 package com.khazoda.breakerplacer.block.entity;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-public abstract class BaseBlockEntity extends RandomizableContainerBlockEntity implements ExtendedScreenHandlerFactory<BlockPos> {
+public abstract class BaseBlockEntity extends RandomizableContainerBlockEntity implements ExtendedMenuProvider<BlockPos> {
   public NonNullList<ItemStack> inventory = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
 
   protected BaseBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
