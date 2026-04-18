@@ -1,75 +1,74 @@
 package com.khazoda.breakerplacer.screen;
 
 import com.khazoda.breakerplacer.Constants;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.CyclingSlotIcon;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
-public class BreakerScreen extends HandledScreen<BreakerScreenHandler> {
-  private static final Identifier TEXTURE = Identifier.of(Constants.NAMESPACE, "textures/gui/container/breaker.png");
-  private static final Text TOOL_SLOT_TOOLTIP = Text.translatable("container.breakerplacer.breaker.tool_slot_tooltip");
-  private static final Identifier EMPTY_SLOT_PICKAXE_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_pickaxe");
-  private static final Identifier EMPTY_SLOT_SHOVEL_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_shovel");
-  private static final Identifier EMPTY_SLOT_AXE_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_axe");
-  private static final Identifier EMPTY_SLOT_HOE_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_hoe");
-  private static final Identifier EMPTY_SLOT_SWORD_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_sword");
-  private static final Identifier EMPTY_SLOT_SHEARS_TEXTURE = Identifier.of(Constants.NAMESPACE, "item/empty_slot_shears");
+public class BreakerScreen extends AbstractContainerScreen<BreakerScreenHandler> {
+  private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Constants.NAMESPACE, "textures/gui/container/breaker.png");
+  private static final Component TOOL_SLOT_TOOLTIP = Component.translatable("container.breakerplacer.breaker.tool_slot_tooltip");
+  private static final Identifier EMPTY_SLOT_PICKAXE_TEXTURE = Identifier.fromNamespaceAndPath(Constants.NAMESPACE, "item/empty_slot_pickaxe");
+  private static final Identifier EMPTY_SLOT_SHOVEL_TEXTURE = Identifier.fromNamespaceAndPath(Constants.NAMESPACE, "item/empty_slot_shovel");
+  private static final Identifier EMPTY_SLOT_AXE_TEXTURE = Identifier.fromNamespaceAndPath(Constants.NAMESPACE, "item/empty_slot_axe");
+  private static final Identifier EMPTY_SLOT_HOE_TEXTURE = Identifier.fromNamespaceAndPath(Constants.NAMESPACE, "item/empty_slot_hoe");
+  private static final Identifier EMPTY_SLOT_SWORD_TEXTURE = Identifier.fromNamespaceAndPath(Constants.NAMESPACE, "item/empty_slot_sword");
+  private static final Identifier EMPTY_SLOT_SHEARS_TEXTURE = Identifier.fromNamespaceAndPath(Constants.NAMESPACE, "item/empty_slot_shears");
   private static final List<Identifier> EMPTY_SLOT_TEXTURES = List.of(
       EMPTY_SLOT_PICKAXE_TEXTURE, EMPTY_SLOT_SHOVEL_TEXTURE, EMPTY_SLOT_AXE_TEXTURE, EMPTY_SLOT_HOE_TEXTURE, EMPTY_SLOT_SWORD_TEXTURE, EMPTY_SLOT_SHEARS_TEXTURE
   );
 
-  private final CyclingSlotIcon templateSlotIcon = new CyclingSlotIcon(9);
+  private final CyclingSlotBackground templateSlotIcon = new CyclingSlotBackground(9);
 
-  public BreakerScreen(BreakerScreenHandler handler, PlayerInventory inventory, Text title) {
+  public BreakerScreen(BreakerScreenHandler handler, Inventory inventory, Component title) {
     super(handler, inventory, title);
   }
 
   @Override
-  public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+  public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
     renderBackground(context, mouseX, mouseY, delta);
     super.render(context, mouseX, mouseY, delta);
     this.renderSlotTooltip(context, mouseX, mouseY);
-    drawMouseoverTooltip(context, mouseX, mouseY);
+    renderTooltip(context, mouseX, mouseY);
   }
 
   @Override
   protected void init() {
     super.init();
-    titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
+    titleLabelX = (imageWidth - font.width(title)) / 2;
   }
 
   @Override
-  protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-    int x = (width - backgroundWidth) / 2;
-    int y = (height - backgroundHeight) / 2;
-    context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 256, 256);
-    this.templateSlotIcon.render(this.handler, context, delta, x, y);
+  protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
+    int x = (width - imageWidth) / 2;
+    int y = (height - imageHeight) / 2;
+    context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 256, 256);
+    this.templateSlotIcon.render(this.menu, context, delta, x, y);
   }
 
   @Override
-  protected void handledScreenTick() {
-    super.handledScreenTick();
-    this.templateSlotIcon.updateTexture(EMPTY_SLOT_TEXTURES);
+  protected void containerTick() {
+    super.containerTick();
+    this.templateSlotIcon.tick(EMPTY_SLOT_TEXTURES);
   }
 
-  private void renderSlotTooltip(DrawContext context, int mouseX, int mouseY) {
-    Optional<Text> optional = Optional.empty();
-    if (this.focusedSlot != null) {
-      ItemStack itemStack = this.handler.getSlot(9).getStack();
+  private void renderSlotTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    Optional<Component> optional = Optional.empty();
+    if (this.hoveredSlot != null) {
+      ItemStack itemStack = this.menu.getSlot(9).getItem();
       if (itemStack.isEmpty()) {
-        if (this.focusedSlot.id == 9) {
+        if (this.hoveredSlot.index == 9) {
           optional = Optional.of(TOOL_SLOT_TOOLTIP);
         }
       }
     }
-    optional.ifPresent(text -> context.drawOrderedTooltip(this.textRenderer, this.textRenderer.wrapLines(text, 115), mouseX, mouseY));
+    optional.ifPresent(text -> context.setTooltipForNextFrame(this.font, this.font.split(text, 115), mouseX, mouseY));
   }
 }

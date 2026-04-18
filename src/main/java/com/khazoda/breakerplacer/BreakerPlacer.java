@@ -6,8 +6,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Items;
 
 public class BreakerPlacer implements ModInitializer {
 
@@ -26,8 +26,8 @@ public class BreakerPlacer implements ModInitializer {
       ServerPlayNetworking.send(handler.getPlayer(), new ConfigSyncPayload(toolDamage));
     });
 
-    ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> content.addAfter(Items.CRAFTER, RegBlocks.PLACER_BLOCK));
-    ItemGroupEvents.modifyEntriesEvent(ItemGroups.REDSTONE).register(content -> content.addAfter(Items.CRAFTER, RegBlocks.BREAKER_BLOCK));
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(content -> content.addAfter(Items.CRAFTER, RegBlocks.PLACER_BLOCK));
+    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(content -> content.addAfter(Items.CRAFTER, RegBlocks.BREAKER_BLOCK));
     Constants.LOG.info("- Block Breaker & Block Placer Loaded -");
   }
 }

@@ -1,29 +1,29 @@
 package com.khazoda.breakerplacer.screen;
 
 import com.khazoda.breakerplacer.registry.RegScreenHandlers;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.screen.Generic3x3ContainerScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.DispenserMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 
-public class PlacerScreenHandler extends Generic3x3ContainerScreenHandler {
-  private final Inventory inventory;
+public class PlacerScreenHandler extends DispenserMenu {
+  private final Container inventory;
   private final BlockPos pos;
 
-  public PlacerScreenHandler(int syncId, PlayerInventory playerInventory, BlockPos pos) {
-    this(syncId, playerInventory, new SimpleInventory(9));
+  public PlacerScreenHandler(int syncId, Inventory playerInventory, BlockPos pos) {
+    this(syncId, playerInventory, new SimpleContainer(9));
   }
 
-  public PlacerScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+  public PlacerScreenHandler(int syncId, Inventory playerInventory, Container inventory) {
     super(syncId, playerInventory, inventory);
-    this.pos = BlockPos.ORIGIN;
-    checkSize(inventory, 9);
+    this.pos = BlockPos.ZERO;
+    checkContainerSize(inventory, 9);
     this.inventory = inventory;
-    inventory.onOpen(playerInventory.player);
+    inventory.startOpen(playerInventory.player);
 
     int m;
     int l;
@@ -51,13 +51,13 @@ public class PlacerScreenHandler extends Generic3x3ContainerScreenHandler {
   }
 
   @Override
-  public ScreenHandlerType<?> getType() {
+  public MenuType<?> getType() {
     return RegScreenHandlers.PLACER_SCREEN_HANDLER;
   }
 
   @Override
-  public boolean canUse(PlayerEntity player) {
-    return this.inventory.canPlayerUse(player);
+  public boolean stillValid(Player player) {
+    return this.inventory.stillValid(player);
   }
 
 
