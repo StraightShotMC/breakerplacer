@@ -3,7 +3,6 @@ package com.khazoda.breakerplacer.registry;
 import com.khazoda.breakerplacer.block.BreakerBlock;
 import com.khazoda.breakerplacer.block.PlacerBlock;
 import com.khazoda.breakerplacer.util.RegistryHelper;
-import java.util.function.Function;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
@@ -12,7 +11,9 @@ import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-import static com.khazoda.breakerplacer.util.RegistryHelper.newID;
+import java.util.function.Function;
+
+import static com.khazoda.breakerplacer.Constants.ID;
 
 public class RegBlocks {
   public static final Item.Properties defaultItemSettings = new Item.Properties().stacksTo(64);
@@ -26,8 +27,8 @@ public class RegBlocks {
 
   /* Register block and item with default item settings */
   private static Block register(String name, Function<BlockBehaviour.Properties, Block> factory, Item.Properties itemSettings) {
-    Block block = factory.apply(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, newID(name))));
-    itemSettings = itemSettings.setId(ResourceKey.create(Registries.ITEM, newID(name))).useBlockDescriptionPrefix();
+    Block block = factory.apply(BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, ID(name))));
+    itemSettings = itemSettings.setId(ResourceKey.create(Registries.ITEM, ID(name))).useBlockDescriptionPrefix();
     return RegistryHelper.registerBlock(name, block, itemSettings);
   }
 
