@@ -10,6 +10,6 @@ public class Constants {
   public static final Logger LOG = LoggerFactory.getLogger(NAME);
 
   public static Identifier ID(String name) {
-    return ID(name);
+    return Identifier.fromNamespaceAndPath(Constants.NAMESPACE, name);
   }
 }
