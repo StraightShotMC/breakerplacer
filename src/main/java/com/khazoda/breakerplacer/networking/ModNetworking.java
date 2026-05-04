@@ -1,21 +1,21 @@
 package com.khazoda.breakerplacer.networking;
 
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 
 public class ModNetworking {
 
   /* Call this method after sending packet when wanting to spawn particles */
-  public static void spawnParticlesOnClient(ParticleEffect particleType, World world, BlockPos pos, Vec3d offset, int particleCount, float velocityMagnitude, byte iterations) {
+  public static void spawnParticlesOnClient(ParticleOptions particleType, Level world, BlockPos pos, Vec3 offset, int particleCount, float velocityMagnitude, byte iterations) {
     try {
-      Vec3d center = pos.toCenterPos();
-      Random r = world.random;
+      Vec3 center = pos.getCenter();
+      RandomSource r = world.getRandom();
 
       for (int i = 0; i < iterations; i++) {
         float x = randomFloatBetween(r.nextFloat(), -0.48f, 0.48f);
@@ -23,7 +23,7 @@ public class ModNetworking {
         float z = randomFloatBetween(r.nextFloat(), -0.48f, 0.48f);
 
         for (int j = 0; j < particleCount; j++) {
-          world.addParticleClient(particleType, center.x + x + offset.x, center.y + y + offset.y, center.z + z + offset.z,
+          world.addParticle(particleType, center.x + x + offset.x, center.y + y + offset.y, center.z + z + offset.z,
               randomVelocity(r.nextFloat(), velocityMagnitude),
               randomVelocity(r.nextFloat(), velocityMagnitude),
               randomVelocity(r.nextFloat(), velocityMagnitude));
@@ -44,10 +44,10 @@ public class ModNetworking {
   }
 
   /* Call this method clientside after sending packet when wanting to play sound */
-  public static void playSoundOnClient(SoundEvent sound, World world, BlockPos pos, float volume, float pitch) {
+  public static void playSoundOnClient(SoundEvent sound, Level world, BlockPos pos, float volume, float pitch) {
     try {
-      Vec3d vec = pos.toCenterPos();
-      world.playSoundAtBlockCenterClient(BlockPos.ofFloored(vec), sound, SoundCategory.BLOCKS, volume, pitch, true);
+      Vec3 vec = pos.getCenter();
+      world.playLocalSound(BlockPos.containing(vec), sound, SoundSource.BLOCKS, volume, pitch, true);
     } catch (Exception e) {
       System.out.println("Caught sound exception");
     }

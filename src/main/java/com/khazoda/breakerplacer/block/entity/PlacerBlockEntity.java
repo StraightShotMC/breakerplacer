@@ -2,10 +2,10 @@ package com.khazoda.breakerplacer.block.entity;
 
 import com.khazoda.breakerplacer.registry.RegBlockEntities;
 import com.khazoda.breakerplacer.screen.PlacerScreenHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class PlacerBlockEntity extends BaseBlockEntity {
 
@@ -14,7 +14,7 @@ public class PlacerBlockEntity extends BaseBlockEntity {
   }
 
   @Override
-  protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+  protected AbstractContainerMenu createMenu(int syncId, Inventory playerInventory) {
     return new PlacerScreenHandler(syncId, playerInventory, this);
   }
 }

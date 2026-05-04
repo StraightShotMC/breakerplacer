@@ -1,31 +1,31 @@
 package com.khazoda.breakerplacer.screen;
 
 import com.khazoda.breakerplacer.registry.RegScreenHandlers;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-public class BreakerScreenHandler extends ScreenHandler {
-  private final Inventory inventory;
+public class BreakerScreenHandler extends AbstractContainerMenu {
+  private final Container inventory;
   private final BlockPos pos;
 
-  public BreakerScreenHandler(int syncId, PlayerInventory playerInventory, BlockPos pos) {
-    this(syncId, playerInventory, new SimpleInventory(10));
+  public BreakerScreenHandler(int syncId, Inventory playerInventory, BlockPos pos) {
+    this(syncId, playerInventory, new SimpleContainer(10));
   }
 
-  public BreakerScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+  public BreakerScreenHandler(int syncId, Inventory playerInventory, Container inventory) {
     super(RegScreenHandlers.BREAKER_SCREEN_HANDLER, syncId);
 
-    this.pos = BlockPos.ORIGIN;
-    checkSize(inventory, 10);
+    this.pos = BlockPos.ZERO;
+    checkContainerSize(inventory, 10);
     this.inventory = inventory;
-    inventory.onOpen(playerInventory.player);
+    inventory.startOpen(playerInventory.player);
 
     int m;
     int l;
@@ -40,8 +40,8 @@ public class BreakerScreenHandler extends ScreenHandler {
     // Tool Slot (9)
     this.addSlot(new Slot(inventory, 9, 26, 35) {
       @Override
-      public boolean canInsert(ItemStack stack) {
-        return stack.contains(DataComponentTypes.TOOL);
+      public boolean mayPlace(ItemStack stack) {
+        return stack.has(DataComponents.TOOL);
       }
     });
 
@@ -59,39 +59,40 @@ public class BreakerScreenHandler extends ScreenHandler {
   }
 
   @Override
-  public ItemStack quickMove(PlayerEntity player, int slotIndex) {
+  public ItemStack quickMoveStack(Player player, int slotIndex) {
     ItemStack newStack = ItemStack.EMPTY;
     Slot slot = this.slots.get(slotIndex);
 
-    if (slot != null && slot.hasStack()) {
-      ItemStack originalStack = slot.getStack();
+      //noinspection ConstantValue (it's a lie)
+      if (slot != null && slot.hasItem()) {
+      ItemStack originalStack = slot.getItem();
       newStack = originalStack.copy();
 
       if (slotIndex < 10) {
         // Moving FROM Breaker TO Player
-        if (!this.insertItem(originalStack, 10, 46, true)) {
+        if (!this.moveItemStackTo(originalStack, 10, 46, true)) {
           return ItemStack.EMPTY;
         }
       } else {
         // Moving FROM Player TO Breaker
-        if (!this.insertItem(originalStack, 9, 10, false)) {
-          if (!this.insertItem(originalStack, 0, 9, false)) {
+        if (!this.moveItemStackTo(originalStack, 9, 10, false)) {
+          if (!this.moveItemStackTo(originalStack, 0, 9, false)) {
             return ItemStack.EMPTY;
           }
         }
       }
 
       if (originalStack.isEmpty()) {
-        slot.setStack(ItemStack.EMPTY);
+        slot.setByPlayer(ItemStack.EMPTY);
       } else {
-        slot.markDirty();
+        slot.setChanged();
       }
 
       if (originalStack.getCount() == newStack.getCount()) {
         return ItemStack.EMPTY;
       }
 
-      slot.onTakeItem(player, originalStack);
+      slot.onTake(player, originalStack);
     }
     return newStack;
   }
@@ -101,7 +102,7 @@ public class BreakerScreenHandler extends ScreenHandler {
   }
 
   @Override
-  public boolean canUse(PlayerEntity player) {
-    return this.inventory.canPlayerUse(player);
+  public boolean stillValid(Player player) {
+    return this.inventory.stillValid(player);
   }
 }

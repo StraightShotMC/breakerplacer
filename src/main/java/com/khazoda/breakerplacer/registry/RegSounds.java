@@ -1,10 +1,10 @@
 package com.khazoda.breakerplacer.registry;
 
 import com.khazoda.breakerplacer.Constants;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
 
 public class RegSounds {
   public static final SoundEvent BREAK = register("break");
@@ -14,6 +14,6 @@ public class RegSounds {
   }
 
   private static SoundEvent register(String name) {
-    return Registry.register(Registries.SOUND_EVENT, name, SoundEvent.of(Identifier.of(Constants.NAMESPACE, name)));
+    return Registry.register(BuiltInRegistries.SOUND_EVENT, name, SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(Constants.NAMESPACE, name)));
   }
 }

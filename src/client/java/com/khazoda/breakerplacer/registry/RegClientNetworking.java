@@ -8,37 +8,34 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 public class RegClientNetworking {
   public static void init() {
-    PayloadTypeRegistry.playC2S().register(ParticlePayload.ID, ParticlePayload.CODEC);
-    PayloadTypeRegistry.playC2S().register(BlockBreakParticlePayload.ID, BlockBreakParticlePayload.CODEC);
-    PayloadTypeRegistry.playC2S().register(SoundPayload.ID, SoundPayload.CODEC);
+    PayloadTypeRegistry.serverboundPlay().register(ParticlePayload.ID, ParticlePayload.CODEC);
+    PayloadTypeRegistry.serverboundPlay().register(BlockBreakParticlePayload.ID, BlockBreakParticlePayload.CODEC);
+    PayloadTypeRegistry.serverboundPlay().register(SoundPayload.ID, SoundPayload.CODEC);
 
     /* Particle Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(ParticlePayload.ID, (payload, context) -> {
-      if (context.client() == null) return;
       if (context.client().player == null) return;
       context.client().execute(() -> {
-        if (context.client().world == null)
+        if (context.client().level == null)
           return;
-        ModNetworking.spawnParticlesOnClient(payload.particle(), context.client().world, payload.pos(), payload.offset(), payload.particleCount(), payload.spread(), payload.iterations());
+        ModNetworking.spawnParticlesOnClient(payload.particle(), context.client().level, payload.pos(), payload.offset(), payload.particleCount(), payload.spread(), payload.iterations());
       });
     });
     /* Block Breaking Particle Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(BlockBreakParticlePayload.ID, (payload, context) -> {
-      if (context.client() == null) return;
       if (context.client().player == null) return;
       context.client().execute(() -> {
-        if (context.client().world == null)
+        if (context.client().level == null)
           return;
-        context.client().world.addBlockBreakParticles(payload.pos(), payload.state());
+        context.client().level.addDestroyBlockEffect(payload.pos(), payload.state());
       });
     });
     /* Sound Event Networking Packet Client Receipt */
     ClientPlayNetworking.registerGlobalReceiver(SoundPayload.ID, (payload, context) -> {
-      if (context.client() == null) return;
       context.client().execute(() -> {
-        if (context.client().world == null)
+        if (context.client().level == null)
           return;
-        ModNetworking.playSoundOnClient(payload.soundEvent(), context.client().world, payload.pos(), 1f, payload.pitch());
+        ModNetworking.playSoundOnClient(payload.soundEvent(), context.client().level, payload.pos(), 1f, payload.pitch());
       });
     });
 

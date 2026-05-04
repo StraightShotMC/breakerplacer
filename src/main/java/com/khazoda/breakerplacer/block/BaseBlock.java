@@ -1,48 +1,47 @@
 package com.khazoda.breakerplacer.block;
 
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-import net.minecraft.world.block.WireOrientation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.redstone.Orientation;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseBlock extends BlockWithEntity {
-  public static final EnumProperty<Direction> FACING = Properties.FACING;
-  public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
+public abstract class BaseBlock extends BaseEntityBlock {
+  public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
+  public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 
-  public static final Settings defaultSettings =
-      Settings.create()
-          .sounds(BlockSoundGroup.STONE)
+  public static final Properties defaultSettings =
+      Properties.of()
+          .sound(SoundType.STONE)
           .strength(3.5f)
-          .pistonBehavior(PistonBehavior.NORMAL)
+          .pushReaction(PushReaction.NORMAL)
           .instrument(NoteBlockInstrument.BASS)
-          .mapColor(MapColor.STONE_GRAY);
+          .mapColor(MapColor.STONE);
 
-  protected BaseBlock(Settings settings) {
+  protected BaseBlock(Properties settings) {
     super(settings);
-    setDefaultState(
-        getStateManager()
-            .getDefaultState()
-            .with(FACING, Direction.NORTH)
-            .with(TRIGGERED, false)
+    registerDefaultState(
+        getStateDefinition()
+            .any()
+            .setValue(FACING, Direction.NORTH)
+            .setValue(TRIGGERED, false)
     );
   }
 
@@ -52,120 +51,120 @@ public abstract class BaseBlock extends BlockWithEntity {
 
   // Important: BlockWithEntity blocks should return MODEL unless you have special rendering
   @Override
-  public BlockRenderType getRenderType(BlockState state) {
-    return BlockRenderType.MODEL;
+  public RenderShape getRenderShape(BlockState state) {
+    return RenderShape.MODEL;
   }
 
-  protected abstract void activate(ServerWorld world, BlockState state, BlockPos pos);
+  protected abstract void activate(ServerLevel world, BlockState state, BlockPos pos);
 
   @Nullable
   @Override
-  public NamedScreenHandlerFactory createScreenHandlerFactory(
+  public MenuProvider getMenuProvider(
       BlockState state,
-      World world,
+      Level world,
       BlockPos pos
   ) {
     BlockEntity blockEntity = world.getBlockEntity(pos);
-    return blockEntity instanceof NamedScreenHandlerFactory factory ? factory : null;
+    return blockEntity instanceof MenuProvider factory ? factory : null;
   }
 
   @Override
-  protected void onStateReplaced(
+  protected void affectNeighborsAfterRemoval(
       BlockState state,
-      ServerWorld world,
+      ServerLevel world,
       BlockPos pos,
       boolean moved
   ) {
-    if (state.isOf(world.getBlockState(pos).getBlock())) return;
+    if (state.is(world.getBlockState(pos).getBlock())) return;
 
     BlockEntity be = world.getBlockEntity(pos);
-    if (be instanceof Inventory inventory) {
-      ItemScatterer.spawn(world, pos, inventory);
-      world.updateComparators(pos, this);
+    if (be instanceof Container inventory) {
+      Containers.dropContents(world, pos, inventory);
+      world.updateNeighbourForOutputSignal(pos, this);
     }
 
-    super.onStateReplaced(state, world, pos, moved);
+    super.affectNeighborsAfterRemoval(state, world, pos, moved);
   }
 
   @Override
-  protected void neighborUpdate(
+  protected void neighborChanged(
       BlockState state,
-      World world,
+      Level world,
       BlockPos pos,
       Block sourceBlock,
-      @Nullable WireOrientation wireOrientation,
+      @Nullable Orientation wireOrientation,
       boolean notify
   ) {
     boolean powered =
-        world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
-    boolean triggered = state.get(TRIGGERED);
+        world.hasNeighborSignal(pos) || world.hasNeighborSignal(pos.above());
+    boolean triggered = state.getValue(TRIGGERED);
 
     if (powered && !triggered) {
-      world.scheduleBlockTick(pos, this, 4);
-      world.setBlockState(pos, state.with(TRIGGERED, true), Block.NOTIFY_ALL);
+      world.scheduleTick(pos, this, 4);
+      world.setBlock(pos, state.setValue(TRIGGERED, true), Block.UPDATE_ALL);
     } else if (!powered && triggered) {
-      world.setBlockState(pos, state.with(TRIGGERED, false), Block.NOTIFY_ALL);
+      world.setBlock(pos, state.setValue(TRIGGERED, false), Block.UPDATE_ALL);
     }
   }
 
   @Override
-  protected void onBlockAdded(
+  protected void onPlace(
       BlockState state,
-      World world,
+      Level world,
       BlockPos pos,
       BlockState oldState,
       boolean notify
   ) {
-    if (!oldState.isOf(state.getBlock())) {
-      if (world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up())) {
-        world.scheduleBlockTick(pos, this, 4);
-        world.setBlockState(pos, state.with(TRIGGERED, true), Block.NOTIFY_ALL);
+    if (!oldState.is(state.getBlock())) {
+      if (world.hasNeighborSignal(pos) || world.hasNeighborSignal(pos.above())) {
+        world.scheduleTick(pos, this, 4);
+        world.setBlock(pos, state.setValue(TRIGGERED, true), Block.UPDATE_ALL);
       }
     }
   }
 
-  protected abstract void scheduledTick(
+  protected abstract void tick(
       BlockState state,
-      ServerWorld world,
+      ServerLevel world,
       BlockPos pos,
-      Random random
+      RandomSource random
   );
 
   @Override
-  protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
     builder.add(FACING, TRIGGERED);
   }
 
   @Nullable
   @Override
-  public BlockState getPlacementState(ItemPlacementContext ctx) {
-    return getDefaultState()
-        .with(FACING, ctx.getPlayerLookDirection().getOpposite())
-        .with(TRIGGERED, false);
+  public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+    return defaultBlockState()
+        .setValue(FACING, ctx.getNearestLookingDirection().getOpposite())
+        .setValue(TRIGGERED, false);
   }
 
   @Override
-  protected boolean hasComparatorOutput(BlockState state) {
+  protected boolean hasAnalogOutputSignal(BlockState state) {
     return true;
   }
 
   @Override
-  protected int getComparatorOutput(
+  protected int getAnalogOutputSignal(
       BlockState state,
-      World world,
+      Level world,
       BlockPos pos,
       Direction direction
   ) {
-    return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
+    return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
   }
 
   @Override
-  protected BlockState rotate(BlockState state, BlockRotation rotation) {
-    return state.with(FACING, rotation.rotate(state.get(FACING)));
+  protected BlockState rotate(BlockState state, Rotation rotation) {
+    return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
   }
 
   @Override
-  protected BlockState mirror(BlockState state, BlockMirror mirror) {
-    return state.rotate(mirror.getRotation(state.get(FACING)));
+  protected BlockState mirror(BlockState state, Mirror mirror) {
+    return state.rotate(mirror.getRotation(state.getValue(FACING)));
   }
 }

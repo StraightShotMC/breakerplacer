@@ -1,38 +1,38 @@
 package com.khazoda.breakerplacer.block.entity;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public abstract class BaseBlockEntity extends LootableContainerBlockEntity implements ExtendedScreenHandlerFactory<BlockPos> {
-  public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(size(), ItemStack.EMPTY);
+public abstract class BaseBlockEntity extends RandomizableContainerBlockEntity implements ExtendedMenuProvider<BlockPos> {
+  public NonNullList<ItemStack> inventory = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
 
   protected BaseBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
     super(blockEntityType, blockPos, blockState);
   }
 
   @Override
-  protected DefaultedList<ItemStack> getHeldStacks() {
+  protected NonNullList<ItemStack> getItems() {
     return this.inventory;
   }
 
   @Override
-  protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+  protected void setItems(NonNullList<ItemStack> inventory) {
     this.inventory = inventory;
   }
 
-  public int chooseNonEmptySlot(Random random) {
+  public int chooseNonEmptySlot(RandomSource random) {
     int i = -1;
     int j = 1;
     for (int k = 0; k < this.inventory.size(); k++) {
@@ -44,34 +44,34 @@ public abstract class BaseBlockEntity extends LootableContainerBlockEntity imple
   }
 
   @Override
-  protected void readData(ReadView view) {
-    super.readData(view);
-    Inventories.readData(view, inventory);
+  protected void loadAdditional(ValueInput view) {
+    super.loadAdditional(view);
+    ContainerHelper.loadAllItems(view, inventory);
   }
 
   @Override
-  protected void writeData(WriteView view) {
-    Inventories.writeData(view, inventory);
-    super.writeData(view);
+  protected void saveAdditional(ValueOutput view) {
+    ContainerHelper.saveAllItems(view, inventory);
+    super.saveAdditional(view);
   }
 
   @Override
-  public BlockEntityUpdateS2CPacket toUpdatePacket() {
-    return BlockEntityUpdateS2CPacket.create(this);
+  public ClientboundBlockEntityDataPacket getUpdatePacket() {
+    return ClientboundBlockEntityDataPacket.create(this);
   }
 
   @Override
-  public BlockPos getScreenOpeningData(ServerPlayerEntity player) {
-    return pos;
+  public BlockPos getScreenOpeningData(ServerPlayer player) {
+    return worldPosition;
   }
 
   @Override
-  protected Text getContainerName() {
-    return Text.translatable(getCachedState().getBlock().getTranslationKey());
+  protected Component getDefaultName() {
+    return Component.translatable(getBlockState().getBlock().getDescriptionId());
   }
 
   @Override
-  public int size() {
+  public int getContainerSize() {
     return 3 * 3;
   }
 }
