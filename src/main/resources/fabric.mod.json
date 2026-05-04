@@ -9,8 +9,8 @@
   ],
   "contact": {
     "homepage": "https://khazoda.com#breakerplacer",
-    "sources": "https://github.com/Khazoda/block-breaker-placer",
-    "issues": "https://github.com/Khazoda/block-breaker-placer/issues"
+    "sources": "https://github.com/khazoda-mods/breakerplacer-legacy",
+    "issues": "https://github.com/khazoda-mods/breakerplacer-legacy/issues"
   },
   "license": "MIT",
   "icon": "assets/breakerplacer/icon.png",
