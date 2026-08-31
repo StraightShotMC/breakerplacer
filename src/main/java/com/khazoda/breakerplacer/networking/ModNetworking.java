@@ -14,7 +14,7 @@ public class ModNetworking {
   /* Call this method after sending packet when wanting to spawn particles */
   public static void spawnParticlesOnClient(ParticleOptions particleType, Level world, BlockPos pos, Vec3 offset, int particleCount, float velocityMagnitude, byte iterations) {
     try {
-      Vec3 center = pos.getCenter();
+      Vec3 center = Vec3.atCenterOf(pos);
       RandomSource r = world.getRandom();
 
       for (int i = 0; i < iterations; i++) {
@@ -46,7 +46,7 @@ public class ModNetworking {
   /* Call this method clientside after sending packet when wanting to play sound */
   public static void playSoundOnClient(SoundEvent sound, Level world, BlockPos pos, float volume, float pitch) {
     try {
-      Vec3 vec = pos.getCenter();
+      Vec3 vec = Vec3.atCenterOf(pos);
       world.playLocalSound(BlockPos.containing(vec), sound, SoundSource.BLOCKS, volume, pitch, true);
     } catch (Exception e) {
       System.out.println("Caught sound exception");

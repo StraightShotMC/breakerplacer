@@ -1,5 +1,5 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version '1.16-SNAPSHOT'
+	id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -27,7 +27,6 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
-
 }
 
 fabricApi {
@@ -37,7 +36,6 @@ fabricApi {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-//	mappings loom.officialMojangMappings()
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
